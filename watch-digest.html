@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body ng-app="testModule">
+    <div ng-controller="testCtrl">
+
+        <input type="text" ng-model="name" />
+
+    </div>
+    <br/>
+    <br/>
+    <hr>
+    <br/>
+    
+    <div ng-controller="testCtrl2">
+
+        {{message}}
+        <br/>
+        <output>{{ rootMessage }}</output>
+        <br/>
+        <br/>
+        <input type="button" value="AngularContext" ng-click="changeMessageFromAngularContext()" />
+        <input type="button" value="NonAngularContext" ng-click="changeNonAngularContext()" />
+        <input type="button" value="NonAngularContextAndApply" ng-click="changeNonAngularContextAndApplyNotify()" />
+        <input type="button" value="NonAngularContextWithDigest" ng-click="changeNonAngularContextAndDigestMethod()" />
+        <input type="button" value="AngularTimeoutServiceContext" ng-click="changeAngularTimeoutServiceContext()" />
+        
+
+    </div>
+
+    <script src="angular.js"></script>
+    <script>
+        angular.module("testModule", []).controller("testCtrl", ["$scope", "$log", function ($scope, $log) {
+
+            $scope.name = "Raj";
+            /* ng-model event handler will call apply function(to call the digest loop) & then it will search the all the watcher from rootScope & it will call the watch function */
+
+            $scope.$watch("name", function (newValue, oldValue) {
+                console.log(`oldValue : ${oldValue} newValue : ${newValue}`);
+                $log.log("watched");
+            });
+        }]);
+
+        angular.module("testModule").controller("testCtrl2", ["$scope", "$log", "$timeout","$rootScope", function ($scope, $log, $timeout,$rootScope) {
+
+            $scope.message = "Default Msg";
+            $rootScope.rootMessage = "Default Root Message";
+            $scope.changeMessageFromAngularContext = function () {
+
+                $scope.message = "Msg from Angular context";
+                $rootScope.rootMessage = "Root Msg from Angular contex";
+
+            }
+            $scope.changeNonAngularContext = function () {
+
+                setTimeout(function () {
+                    $scope.message = "Msg from Non Angular context";
+                    $rootScope.rootMessage = "Root Msg from Non Angular context";
+                    console.log($scope.message);
+                }, 3000);
+            }
+            $scope.changeNonAngularContextAndApplyNotify = function () {
+
+                setTimeout(function () {
+                    $scope.$apply(function () {
+                        $scope.message = "Msg from Non Angular context with apply";
+                        $rootScope.rootMessage = "Root Msg from Non Angular context with apply";
+                        console.log($scope.message + " : "+ $rootScope.rootMessage);
+                    });
+                }, 3000);
+            } 
+            $scope.changeNonAngularContextAndDigestMethod = function () {
+
+                setTimeout(function () {
+                        $scope.message = "Msg from Non Angular context with apply";
+                        $rootScope.rootMessage = "Root Msg from Non Angular context with apply";
+                        console.log($scope.message + " : "+ $rootScope.rootMessage);
+                        $scope.$digest();
+                }, 3000);
+            }
+            $scope.changeAngularTimeoutServiceContext = function () {
+
+                $timeout(function () {
+                    $scope.message = "Msg from Non Angular Timout service context";
+                    $rootScope.rootMessage = "Default Root Message";
+                    console.log($scope.message);
+                }, 3000);
+            }
+
+        }]);
+    </script>
+
+</body>
+
+</html>

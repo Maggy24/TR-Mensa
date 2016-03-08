@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+
+<body ng-app="testModule">
+
+    <div ng-controller="testCtrl">
+         <input type="text" ng-model="testCtrlMessage"> <output>{{testCtrlMessage}}</output>
+       <!-- <test-directive message-attr="testCtrlMessage}}">   its for one way binding -->
+        <test-directive message-attr="testCtrlMessage" echo-fun-attr="echo()">    <!-- Two way binding -->
+        
+        </test-directive>        
+    </div>
+
+    <script src="angular.js"></script>
+    <script>
+        var myapp = angular.module("testModule", []);
+        myapp.directive("testDirective", function () {
+
+            return { //directive configuration object
+                restrict: "EA", // AECM
+                // priority : Number,
+                // terminal : Boolean,
+                //template : "<h1> Hello test directive {{message}}</h1>",
+                templateUrl: "testDirective.html", //we can define template in script tag
+                // replace : true,     // replace the direcive
+                // scope : true,  //create new scope with prototypically inherited from parent scope
+                //bydefault scope property value is false (Don't create new scope object)
+               // scope : {},   // this scope we call isolated scope
+               // scope : { message : "@messageAttr" },
+                //@ -- one way binding ( top - down )
+                scope : { message : "=messageAttr", echoFun : "&echoFunAttr", placeholder : "@" }, 
+                //isolate but still getting or accessing parent propertise and object
+                //= --Two way binding for outside caller also should work
+                //& -- reference to the parent function (bottom -up)
+                transclude : true
+            };
+
+        });
+        myapp.controller("testCtrl", ["$scope", function ($scope) {
+            $scope.testCtrlMessage = "Msg from test Controller";
+            $scope.echo = function(){
+              alert($scope.testCtrlMessage);  
+            };
+        }]);
+    </script>
+
+</body>
+
+</html>

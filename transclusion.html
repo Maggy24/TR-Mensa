@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body ng-app="test">
+
+    <div output-text>
+        <p>Hello Word</p>
+    </div>
+    <p transclude-element>
+        Tranclude element 
+    </p>
+    <div transclude-element>
+        <p> Paragraph in div</p>
+    </div>
+    <script src="angular.js"></script>
+    <script>
+        // -- Transclusion -- In computer science, transclusion is the inclusion of part or all of an electronic document into one or more other documents by hypertext reference. 
+        var myapp = angular.module("test", []);
+        myapp.directive("outputText", function () {
+
+            return { 
+                transclude : true,    // element's content will transclude/wrap
+                scope : {},
+                template : "<div ng-transclude> </div>"
+            };
+
+        });
+        myapp.directive("transcludeElement", function () {
+
+            return { 
+                transclude : "element",             // whole element itself will be transcluded/wrap with the help of replace : true
+                scope : {},
+                restrict : "AE",
+                replace : true,               
+                template : "<div ng-transclude> </div>"
+            };
+
+        });
+        
+        /*myapp.controller("testCtrl", ["$scope", function ($scope) {
+            $scope.testCtrlMessage = "Msg from test Controller";
+            $scope.echo = function(){
+              alert($scope.testCtrlMessage);  
+            };
+        }]);*/
+    </script>
+
+</body>
+
+</html>

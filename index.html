@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body ng-app="calculatorModule">
+   <div ng-controller="calculatorCtrl as ctrl">
+       <input type="text" ng-model="ctrl.name">
+       <Output>{{ctrl.name}}</Output><br/>
+        <output>{{"Ouput of division 12/4 " + ctrl.div(12/4)}}</output><br/>
+       <input type="text" ng-model="fname">
+   </div>
+    <output>Angular Test</output>
+    <output>{{4+5}}</output>  
+    
+
+
+    <script src="angular.js"></script>
+    <script src="script.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body ng-app="productShoppingCart">
+    <div ng-controller="productMasterCtrl">
+        Select Products : -
+        <table>
+            <thead>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="product in products">
+                    <td>{{product.id}}</td>
+                    <td>{{product.name}}</td>
+                    <td>{{product.price}}</td>
+                    <td>
+                        <input type="button" value="Add" ng-click="addInBasket(product)" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <br>
+        <hr>
+        <br>
+        <br>
+        <div ng-controller="productCartCtrl">
+            Selected Products : -
+            <table>
+                <thead>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="product in shopingBasket">
+                        <td>{{product.id}}</td>
+                        <td>{{product.name}}</td>
+                        <td>{{product.price}}</td>
+                        <td>
+                            <input type="button" value="Remove" ng-click="removeItem($index)">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="angular.js"></script>
+    <script>
+        // Scope Communication between two controller by events like event agrigator but for we have to got through the scope hirarchy
+        angular.module("productDataRepositoryModule",[])
+                .provider("productdataservice", function () {
+                this.cachSize = 10;
+                this.mode = "online";
+                this.location = "remote";
+                this.url = undefined;
+                this.dataformat = "json";
+                this.username = undefined;
+                this.password = undefined;
+                this.$get = function () {
+                    var cache = [];
+                    return {
+                        getAllProducts: function () {
+                            if(this.location == 'remote'){
+                                
+                                
+                            } else {
+                                var productJsonString = localStorage.getItem("products");
+                                var products = JSON.parse(productJsonString);
+                                if(this.mode == "offline"){
+                                    for(var i =0; i<products.length;i++){
+                                        cache.push(products[i]);
+                                    }
+                                    return cache;
+                                }
+                                return products;
+                            }
+                        },
+                        getProductBYId: function (id) {},
+                        addNewProduct: function (product) {
+                            
+                            if(this.location == 'remote'){
+                                
+                                
+                            } else {
+                                
+                                
+                                if(this.mode == "offline"){
+                                    cache.push(product)
+                                }
+                            }
+                        },
+                        updateProduct: function (product) {},
+                        deletProduct: function (id) {}
+                    };
+                };
+            });
+        
+        angular.module("productShoppingCart", ["productDataRepositoryModule"])
+            .config(function(productdataserviceProvider){  // Provider with suffix with pascal convention
+               productdataserviceProvider.mode = "offline";
+               productdataserviceProvider.location = "local";
+               var products= [
+                    {
+                        id: 101,
+                        name: "Maruti",
+                        price: 4000
+                },
+                    {
+                        id: 102,
+                        name: "Suziki",
+                        price: 4000
+                },
+                    {
+                        id: 103,
+                        name: "Alto",
+                        price: 4000
+                },
+                    {
+                        id: 104,
+                        name: "Honda",
+                        price: 4000
+                }
+
+            ];
+            localStorage.setItem("products",JSON.stringify(products));
+            
+            })
+            .service("alertService", function () {
+
+                this.display = function (msg) {
+                    alert(msg);
+                }
+
+            })
+            .controller("productMasterCtrl", ["$scope", "$log", "alertService","productdataservice", function ($scope, $log, alertService,productdataservice) {
+
+                $scope.products = [
+                    {
+                        id: 101,
+                        name: "Maruti",
+                        price: 4000
+                },
+                    {
+                        id: 102,
+                        name: "Suziki",
+                        price: 4000
+                },
+                    {
+                        id: 103,
+                        name: "Alto",
+                        price: 4000
+                },
+                    {
+                        id: 104,
+                        name: "Honda",
+                        price: 4000
+                }
+
+            ];
+                $scope.itemcounter = 0;
+
+                $scope.$watch("itemcounter", function (newVal, oldVal) {
+                    console.log("Itemcounter : ", newVal);
+                    if (newVal == 4) {
+                        alertService.display("Max Limit Reached");
+                    }
+                });
+
+                $scope.addInBasket = function (product) {
+                    $scope.itemcounter = $scope.itemcounter + 1;
+                    console.log("Inside the addInBasket");
+                    $scope.$broadcast("addToCart", product);
+
+                }
+        }]);
+
+        angular.module("productShoppingCart").controller("productCartCtrl", ["$scope", "$log", function ($scope, $log) {
+
+            $scope.shopingBasket = [];
+
+            $scope.$on("addToCart", function (event, data) {
+                $scope.shopingBasket.push(data);
+            });
+
+            $scope.removeItem = function (index) {
+                $scope.shopingBasket.splice(index, 1);
+            }
+
+        }]);
+    </script>
+</body>
+
+</html>
